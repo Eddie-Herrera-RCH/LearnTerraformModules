@@ -11,25 +11,16 @@ provider "aws" {
   region = var.preferred_region
 }
 
-data "aws_iam_policy_document" "per_bucket" {
-  for_each = var.s3_bucket_list
-
-  statement {
-    principals {
-      type        = "AWS"
-      identifiers = [var.aws_arn]
-    }
-    actions = ["s3:*"]
-    resources = [
-      "arn:aws:s3:::${each.value}",
-      "arn:aws:s3:::${each.value}/*"
-    ]
-  }
-}
-
 # Call s3bucket module once per bucket
 module "s3_buckets_create" {
-  source   = "./modules/s3bucket"
+  source   = "./modules/s3module"
   for_each = toset(var.s3_bucket_list)
+  aws_arn = var.aws_arn
   bucket_name = each.key
+}
+
+module "launch_ec2s" {
+  source = "./modules/ec2module"
+  for_each = toset(var.ec2_list)
+  instance_name = each.key
 }

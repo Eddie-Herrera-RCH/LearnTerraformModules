@@ -10,3 +10,7 @@ variable "s3_bucket_list" {
 variable "aws_arn" {
     type = string
 }
+
+variable "ec2_list" {
+    type = list(string)
+}
